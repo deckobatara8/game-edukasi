@@ -1,15 +1,24 @@
-// ===============================
-// KONFIGURASI GOOGLE SHEETS
-// ===============================
+// ======================================================
+// EDUQUEST - GAME EDUKASI 2D
+// HTML + CSS + JAVASCRIPT
+// ======================================================
 
-// Ganti dengan URL Google Apps Script Web App kamu
+
+// ======================================================
+// 1. KONFIGURASI GOOGLE SHEETS
+// ======================================================
+
+// Masukkan URL Web App Google Apps Script kamu di sini.
+// Contoh:
+// const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/XXXXX/exec";
+
 const GOOGLE_SCRIPT_URL =
   "MASUKKAN_URL_GOOGLE_APPS_SCRIPT_DI_SINI";
 
 
-// ===============================
-// DATA GAME
-// ===============================
+// ======================================================
+// 2. BANK SOAL
+// ======================================================
 
 const questions = [
 
@@ -19,61 +28,111 @@ const questions = [
 
   {
     question: "Berapakah hasil dari 5 + 7?",
-    answers: ["10", "12", "15", "20"],
+    answers: [
+      "10",
+      "12",
+      "15",
+      "20"
+    ],
     correct: 1
   },
 
   {
     question: "Berapakah hasil dari 9 × 6?",
-    answers: ["45", "54", "56", "63"],
+    answers: [
+      "45",
+      "54",
+      "56",
+      "63"
+    ],
     correct: 1
   },
 
   {
     question: "Berapakah hasil dari 100 ÷ 4?",
-    answers: ["20", "25", "30", "40"],
+    answers: [
+      "20",
+      "25",
+      "30",
+      "40"
+    ],
     correct: 1
   },
 
   {
     question: "Berapakah hasil dari 15 - 8?",
-    answers: ["5", "6", "7", "8"],
+    answers: [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
     correct: 2
   },
 
   {
-    question: "Berapakah 12 × 5?",
-    answers: ["50", "55", "60", "65"],
+    question: "Berapakah hasil dari 12 × 5?",
+    answers: [
+      "50",
+      "55",
+      "60",
+      "65"
+    ],
     correct: 2
   },
 
   {
     question: "Berapakah hasil dari 81 ÷ 9?",
-    answers: ["7", "8", "9", "10"],
+    answers: [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
     correct: 2
   },
 
   {
-    question: "Berapakah 25 + 35?",
-    answers: ["50", "55", "60", "65"],
+    question: "Berapakah hasil dari 25 + 35?",
+    answers: [
+      "50",
+      "55",
+      "60",
+      "65"
+    ],
     correct: 2
   },
 
   {
-    question: "Berapakah 50 - 23?",
-    answers: ["27", "28", "29", "30"],
+    question: "Berapakah hasil dari 50 - 23?",
+    answers: [
+      "27",
+      "28",
+      "29",
+      "30"
+    ],
     correct: 0
   },
 
   {
-    question: "Berapakah 7 × 8?",
-    answers: ["48", "54", "56", "64"],
+    question: "Berapakah hasil dari 7 × 8?",
+    answers: [
+      "48",
+      "54",
+      "56",
+      "64"
+    ],
     correct: 2
   },
 
   {
-    question: "Berapakah 144 ÷ 12?",
-    answers: ["10", "11", "12", "14"],
+    question: "Berapakah hasil dari 144 ÷ 12?",
+    answers: [
+      "10",
+      "11",
+      "12",
+      "14"
+    ],
     correct: 2
   },
 
@@ -344,7 +403,7 @@ const questions = [
     answers: [
       "Hijau",
       "Ungu",
-      "Pink",
+      "Merah muda",
       "Cokelat"
     ],
     correct: 2
@@ -375,287 +434,779 @@ const questions = [
 ];
 
 
-// ===============================
-// VARIABEL GAME
-// ===============================
+// ======================================================
+// 3. VARIABEL GAME
+// ======================================================
 
+// Jumlah soal yang dimainkan setiap game
+const totalQuestions = 10;
+
+// Soal yang sudah dipilih secara acak
+let gameQuestions = [];
+
+// Nomor soal sekarang
+let questionNumber = 0;
+
+// Data pemain
 let playerName = "";
 
+// Statistik game
 let score = 0;
-
 let lives = 3;
-
 let level = 1;
 
 let correctAnswers = 0;
-
 let wrongAnswers = 0;
 
+// Soal aktif
 let currentQuestion = null;
 
+// Mencegah pemain memilih jawaban dua kali
 let answered = false;
 
 
-// ===============================
-// MULAI GAME
-// ===============================
+// ======================================================
+// 4. MULAI GAME
+// ======================================================
 
 function startGame() {
 
   const input =
     document.getElementById("playerName");
 
+  if (!input) {
+    console.error(
+      "Element #playerName tidak ditemukan."
+    );
+    return;
+  }
+
   playerName =
     input.value.trim();
 
+  // Validasi nama
   if (playerName === "") {
 
-    alert("Silakan masukkan nama terlebih dahulu!");
+    alert(
+      "Silakan masukkan nama terlebih dahulu!"
+    );
+
+    input.focus();
 
     return;
   }
 
-  document
-    .getElementById("startScreen")
-    .classList.add("hidden");
 
-  document
-    .getElementById("gameScreen")
-    .classList.remove("hidden");
+  // ==========================
+  // RESET GAME
+  // ==========================
 
-  document
-    .getElementById("nameDisplay")
-    .textContent = playerName;
+  score = 0;
 
+  lives = 3;
+
+  level = 1;
+
+  correctAnswers = 0;
+
+  wrongAnswers = 0;
+
+  questionNumber = 0;
+
+  currentQuestion = null;
+
+  answered = false;
+
+
+  // ==========================
+  // ACAK SOAL
+  // ==========================
+
+  gameQuestions =
+    [...questions]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, totalQuestions);
+
+
+  console.log(
+    "Soal yang dimainkan:",
+    gameQuestions
+  );
+
+
+  // ==========================
+  // PINDAH KE GAME
+  // ==========================
+
+  const startScreen =
+    document.getElementById(
+      "startScreen"
+    );
+
+  const gameScreen =
+    document.getElementById(
+      "gameScreen"
+    );
+
+  if (startScreen) {
+    startScreen.classList.add(
+      "hidden"
+    );
+  }
+
+  if (gameScreen) {
+    gameScreen.classList.remove(
+      "hidden"
+    );
+  }
+
+
+  // Tampilkan nama pemain
+  const nameDisplay =
+    document.getElementById(
+      "nameDisplay"
+    );
+
+  if (nameDisplay) {
+    nameDisplay.textContent =
+      playerName;
+  }
+
+
+  // Update statistik
   updateStats();
 }
 
 
-// ===============================
-// TAMPILKAN PERTANYAAN
-// ===============================
+// ======================================================
+// 5. MENAMPILKAN PERTANYAAN
+// ======================================================
 
-function showQuestion(index) {
+function showQuestion() {
 
-  currentQuestion = questions[index];
+  // Cek apakah soal masih tersedia
+  if (
+    !gameQuestions ||
+    gameQuestions.length === 0
+  ) {
+
+    console.error(
+      "Belum ada soal yang dipilih."
+    );
+
+    return;
+  }
+
+
+  // Jika semua soal selesai
+  if (
+    questionNumber >=
+    gameQuestions.length
+  ) {
+
+    endGame();
+
+    return;
+  }
+
+
+  // Ambil soal saat ini
+  currentQuestion =
+    gameQuestions[questionNumber];
+
+
+  // Validasi
+  if (!currentQuestion) {
+
+    console.error(
+      "Soal tidak ditemukan."
+    );
+
+    return;
+  }
+
 
   answered = false;
 
-  document
-    .getElementById("quizModal")
-    .classList.remove("hidden");
 
-  document
-    .getElementById("questionText")
-    .textContent =
-      currentQuestion.question;
+  // ==========================
+  // TAMPILKAN MODAL
+  // ==========================
 
-  document
-    .getElementById("feedback")
-    .textContent = "";
+  const modal =
+    document.getElementById(
+      "quizModal"
+    );
 
-  document
-    .getElementById("nextButton")
-    .classList.add("hidden");
+  if (modal) {
 
-  const answers =
-    document.getElementById("answers");
+    modal.classList.remove(
+      "hidden"
+    );
 
-  answers.innerHTML = "";
+  }
 
+
+  // ==========================
+  // TAMPILKAN TEKS SOAL
+  // ==========================
+
+  const questionText =
+    document.getElementById(
+      "questionText"
+    );
+
+  if (questionText) {
+
+    questionText.textContent =
+      `Soal ${questionNumber + 1} dari ${totalQuestions}: ${currentQuestion.question}`;
+
+  }
+
+
+  // ==========================
+  // RESET FEEDBACK
+  // ==========================
+
+  const feedback =
+    document.getElementById(
+      "feedback"
+    );
+
+  if (feedback) {
+
+    feedback.textContent = "";
+
+    feedback.style.color =
+      "#333";
+
+  }
+
+
+  // ==========================
+  // RESET TOMBOL LANJUT
+  // ==========================
+
+  const nextButton =
+    document.getElementById(
+      "nextButton"
+    );
+
+  if (nextButton) {
+
+    nextButton.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  // ==========================
+  // BUAT PILIHAN JAWABAN
+  // ==========================
+
+  const answersContainer =
+    document.getElementById(
+      "answers"
+    );
+
+  if (!answersContainer) {
+
+    console.error(
+      "Element #answers tidak ditemukan."
+    );
+
+    return;
+  }
+
+
+  // Bersihkan jawaban sebelumnya
+  answersContainer.innerHTML = "";
+
+
+  // Buat tombol jawaban
   currentQuestion.answers.forEach(
-    (answer, i) => {
+    (answer, index) => {
 
       const button =
-        document.createElement("button");
+        document.createElement(
+          "button"
+        );
 
-      button.textContent = answer;
+      button.type = "button";
 
-      button.className = "answer";
+      button.textContent =
+        answer;
 
-      button.onclick =
-        () => checkAnswer(i, button);
+      button.className =
+        "answer";
 
-      answers.appendChild(button);
+      button.addEventListener(
+        "click",
+        function () {
+
+          checkAnswer(
+            index,
+            button
+          );
+
+        }
+      );
+
+      answersContainer.appendChild(
+        button
+      );
 
     }
   );
+
 }
 
 
-// ===============================
-// CEK JAWABAN
-// ===============================
+// ======================================================
+// 6. CEK JAWABAN
+// ======================================================
 
-function checkAnswer(index, button) {
+function checkAnswer(
+  selectedIndex,
+  selectedButton
+) {
 
-  if (answered) return;
+  // Cegah klik dua kali
+  if (answered) {
+    return;
+  }
 
   answered = true;
 
+
+  // ==========================
+  // NONAKTIFKAN SEMUA JAWABAN
+  // ==========================
+
   const allButtons =
-    document.querySelectorAll(".answer");
+    document.querySelectorAll(
+      ".answer"
+    );
 
-  allButtons.forEach(btn => {
+  allButtons.forEach(
+    button => {
 
-    btn.disabled = true;
+      button.disabled = true;
 
-  });
+    }
+  );
 
 
-  if (index === currentQuestion.correct) {
+  // ==========================
+  // JAWABAN BENAR
+  // ==========================
 
-    button.classList.add("correct");
+  if (
+    selectedIndex ===
+    currentQuestion.correct
+  ) {
+
+    selectedButton.classList.add(
+      "correct"
+    );
 
     score += 100;
 
     correctAnswers++;
 
-    document
-      .getElementById("feedback")
-      .textContent =
-      "✅ Jawaban benar! +100 poin";
 
-  } else {
+    const feedback =
+      document.getElementById(
+        "feedback"
+      );
 
-    button.classList.add("wrong");
+    if (feedback) {
+
+      feedback.textContent =
+        "✅ Jawaban benar! +100 poin";
+
+      feedback.style.color =
+        "#27ae60";
+
+    }
+
+  }
+
+
+  // ==========================
+  // JAWABAN SALAH
+  // ==========================
+
+  else {
+
+    selectedButton.classList.add(
+      "wrong"
+    );
 
     lives--;
 
     wrongAnswers++;
 
-    score = Math.max(0, score - 50);
+    score =
+      Math.max(
+        0,
+        score - 50
+      );
 
-    document
-      .getElementById("feedback")
-      .textContent =
-      "❌ Jawaban salah! -1 nyawa";
+
+    // Tampilkan jawaban benar
+    if (
+      allButtons[
+        currentQuestion.correct
+      ]
+    ) {
+
+      allButtons[
+        currentQuestion.correct
+      ].classList.add(
+        "correct"
+      );
+
+    }
+
+
+    const feedback =
+      document.getElementById(
+        "feedback"
+      );
+
+    if (feedback) {
+
+      feedback.textContent =
+        "❌ Salah! Jawaban yang benar: " +
+        currentQuestion.answers[
+          currentQuestion.correct
+        ];
+
+      feedback.style.color =
+        "#e74c3c";
+
+    }
 
   }
 
-  // Level naik setiap 200 poin
+
+  // ==========================
+  // HITUNG LEVEL
+  // ==========================
+
   level =
     Math.floor(score / 200) + 1;
 
+
+  // Update statistik
   updateStats();
 
-  document
-    .getElementById("nextButton")
-    .classList.remove("hidden");
+
+  // ==========================
+  // TAMPILKAN TOMBOL LANJUT
+  // ==========================
+
+  const nextButton =
+    document.getElementById(
+      "nextButton"
+    );
+
+  if (nextButton) {
+
+    nextButton.classList.remove(
+      "hidden"
+    );
+
+  }
 
 }
 
 
-// ===============================
-// TUTUP SOAL
-// ===============================
+// ======================================================
+// 7. SOAL BERIKUTNYA
+// ======================================================
 
 function closeQuestion() {
 
-  document
-    .getElementById("quizModal")
-    .classList.add("hidden");
+  // Tutup modal
+  const modal =
+    document.getElementById(
+      "quizModal"
+    );
+
+  if (modal) {
+
+    modal.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  // ==========================
+  // CEK NYAWA
+  // ==========================
 
   if (lives <= 0) {
 
     endGame();
 
+    return;
   }
+
+
+  // Tambahkan nomor soal
+  questionNumber++;
+
+
+  // ==========================
+  // CEK APAKAH SOAL HABIS
+  // ==========================
+
+  if (
+    questionNumber >=
+    totalQuestions
+  ) {
+
+    endGame();
+
+    return;
+  }
+
+
+  // ==========================
+  // TAMPILKAN SOAL BERIKUTNYA
+  // ==========================
+
+  setTimeout(
+    () => {
+
+      showQuestion();
+
+    },
+    200
+  );
 
 }
 
 
-// ===============================
-// UPDATE STATISTIK
-// ===============================
+// ======================================================
+// 8. UPDATE STATISTIK
+// ======================================================
 
 function updateStats() {
 
-  document
-    .getElementById("score")
-    .textContent = score;
+  const scoreElement =
+    document.getElementById(
+      "score"
+    );
 
-  document
-    .getElementById("lives")
-    .textContent = lives;
+  const livesElement =
+    document.getElementById(
+      "lives"
+    );
 
-  document
-    .getElementById("level")
-    .textContent = level;
+  const levelElement =
+    document.getElementById(
+      "level"
+    );
+
+
+  if (scoreElement) {
+
+    scoreElement.textContent =
+      score;
+
+  }
+
+
+  if (livesElement) {
+
+    livesElement.textContent =
+      lives;
+
+  }
+
+
+  if (levelElement) {
+
+    levelElement.textContent =
+      level;
+
+  }
 
 }
 
 
-// ===============================
-// GAME SELESAI
-// ===============================
+// ======================================================
+// 9. GAME SELESAI
+// ======================================================
 
 function endGame() {
 
-  document
-    .getElementById("gameScreen")
-    .classList.add("hidden");
+  // Tutup modal jika masih terbuka
+  const modal =
+    document.getElementById(
+      "quizModal"
+    );
 
-  document
-    .getElementById("resultScreen")
-    .classList.remove("hidden");
+  if (modal) {
 
-  document
-    .getElementById("resultName")
-    .textContent = playerName;
-
-  document
-    .getElementById("finalScore")
-    .textContent = score;
-
-  let message = "";
-
-  if (score >= 250) {
-
-    message =
-      "🏆 Luar biasa! Kamu sangat hebat!";
-
-  } else if (score >= 150) {
-
-    message =
-      "👏 Bagus! Terus tingkatkan kemampuanmu!";
-
-  } else {
-
-    message =
-      "💪 Jangan menyerah! Coba lagi.";
+    modal.classList.add(
+      "hidden"
+    );
 
   }
 
-  document
-    .getElementById("resultMessage")
-    .textContent = message;
+
+  // Sembunyikan game
+  const gameScreen =
+    document.getElementById(
+      "gameScreen"
+    );
+
+  if (gameScreen) {
+
+    gameScreen.classList.add(
+      "hidden"
+    );
+
+  }
 
 
-  // Kirim data ke Google Sheets
+  // Tampilkan hasil
+  const resultScreen =
+    document.getElementById(
+      "resultScreen"
+    );
+
+  if (resultScreen) {
+
+    resultScreen.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  // Nama
+  const resultName =
+    document.getElementById(
+      "resultName"
+    );
+
+  if (resultName) {
+
+    resultName.textContent =
+      playerName;
+
+  }
+
+
+  // Skor
+  const finalScore =
+    document.getElementById(
+      "finalScore"
+    );
+
+  if (finalScore) {
+
+    finalScore.textContent =
+      score;
+
+  }
+
+
+  // ==========================
+  // PESAN HASIL
+  // ==========================
+
+  const resultMessage =
+    document.getElementById(
+      "resultMessage"
+    );
+
+  let message = "";
+
+
+  if (score >= 800) {
+
+    message =
+      "🏆 LUAR BIASA! Kamu adalah ahli!";
+
+  }
+
+  else if (score >= 600) {
+
+    message =
+      "🌟 Hebat! Pengetahuanmu sangat bagus!";
+
+  }
+
+  else if (score >= 400) {
+
+    message =
+      "👏 Bagus! Terus belajar dan tingkatkan lagi!";
+
+  }
+
+  else if (score >= 200) {
+
+    message =
+      "💪 Lumayan! Jangan menyerah, coba lagi!";
+
+  }
+
+  else {
+
+    message =
+      "📚 Tetap semangat! Belajar sedikit demi sedikit.";
+
+  }
+
+
+  if (resultMessage) {
+
+    resultMessage.textContent =
+      message;
+
+  }
+
+
+  // ==========================
+  // SIMPAN KE GOOGLE SHEETS
+  // ==========================
+
   saveToGoogleSheets();
 
 }
 
 
-// ===============================
-// GOOGLE SHEETS
-// ===============================
+// ======================================================
+// 10. SIMPAN DATA KE GOOGLE SHEETS
+// ======================================================
 
 function saveToGoogleSheets() {
 
+  // Jika URL belum dikonfigurasi
   if (
     GOOGLE_SCRIPT_URL ===
     "MASUKKAN_URL_GOOGLE_APPS_SCRIPT_DI_SINI"
   ) {
 
-    console.log(
+    console.warn(
       "Google Sheets belum dikonfigurasi."
     );
 
     return;
   }
 
+
+  // ==========================
+  // DATA YANG DIKIRIM
+  // ==========================
 
   const data = {
 
@@ -671,26 +1222,47 @@ function saveToGoogleSheets() {
 
     nyawa: lives,
 
+    jumlahSoal: totalQuestions,
+
     tanggal:
-      new Date().toLocaleString("id-ID")
+      new Date()
+        .toLocaleString(
+          "id-ID"
+        )
 
   };
 
 
-  fetch(GOOGLE_SCRIPT_URL, {
+  console.log(
+    "Mengirim data:",
+    data
+  );
 
-    method: "POST",
 
-    mode: "no-cors",
+  // ==========================
+  // KIRIM KE APPS SCRIPT
+  // ==========================
 
-    headers: {
-      "Content-Type":
-        "application/json"
-    },
+  fetch(
+    GOOGLE_SCRIPT_URL,
+    {
 
-    body: JSON.stringify(data)
+      method: "POST",
 
-  })
+      mode: "no-cors",
+
+      headers: {
+
+        "Content-Type":
+          "application/json"
+
+      },
+
+      body:
+        JSON.stringify(data)
+
+    }
+  )
 
   .then(() => {
 
@@ -700,13 +1272,54 @@ function saveToGoogleSheets() {
 
   })
 
-  .catch(error => {
+  .catch(
+    error => {
 
-    console.error(
-      "Gagal mengirim data:",
-      error
-    );
+      console.error(
+        "Gagal mengirim data ke Google Sheets:",
+        error
+      );
 
-  });
+    }
+  );
 
 }
+
+
+// ======================================================
+// 11. CEK SAAT HALAMAN SELESAI DIMUAT
+// ======================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    console.log(
+      "🎮 EduQuest berhasil dimuat!"
+    );
+
+    console.log(
+      `📚 Jumlah bank soal: ${questions.length}`
+    );
+
+    console.log(
+      `🎯 Soal per permainan: ${totalQuestions}`
+    );
+
+
+    // Pastikan modal tertutup
+    const modal =
+      document.getElementById(
+        "quizModal"
+      );
+
+    if (modal) {
+
+      modal.classList.add(
+        "hidden"
+      );
+
+    }
+
+  }
+);
