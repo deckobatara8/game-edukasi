@@ -1,0 +1,345 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      135deg,
+      #667eea,
+      #764ba2
+    );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #333;
+}
+
+.container {
+  width: 95%;
+  max-width: 900px;
+  text-align: center;
+}
+
+header {
+  color: white;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-size: 42px;
+  margin-bottom: 5px;
+}
+
+.card {
+  background: white;
+  padding: 35px;
+  border-radius: 25px;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.25);
+}
+
+.card h2 {
+  margin-bottom: 15px;
+}
+
+.card p {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  max-width: 400px;
+
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+
+  margin-bottom: 15px;
+
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  padding: 13px 25px;
+
+  border-radius: 12px;
+
+  background: #667eea;
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: #5568d9;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* STATS */
+
+.stats {
+  background: white;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: 15px;
+
+  border-radius: 15px;
+
+  margin-bottom: 15px;
+
+  font-weight: bold;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* GAME AREA */
+
+#gameArea {
+  position: relative;
+
+  height: 500px;
+
+  border-radius: 25px;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      #87ceeb 0%,
+      #87ceeb 65%,
+      #65b84f 65%,
+      #65b84f 100%
+    );
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.3);
+}
+
+/* PLAYER */
+
+#player {
+  position: absolute;
+
+  left: 50%;
+  bottom: 50px;
+
+  transform: translateX(-50%);
+
+  font-size: 60px;
+
+  animation: floating 1.5s infinite;
+}
+
+@keyframes floating {
+
+  0%,100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+
+}
+
+/* OBJECT */
+
+.object {
+  position: absolute;
+
+  font-size: 55px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  animation: bounce 1.5s infinite;
+}
+
+.object:hover {
+  transform: scale(1.3);
+}
+
+.object1 {
+  top: 100px;
+  left: 15%;
+}
+
+.object2 {
+  top: 200px;
+  right: 18%;
+}
+
+.object3 {
+  top: 70px;
+  right: 40%;
+}
+
+@keyframes bounce {
+
+  0%,100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+
+}
+
+.instruction {
+  color: white;
+  margin-top: 15px;
+}
+
+/* MODAL */
+
+.modal {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0,0,0,0.65);
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+}
+
+.quizBox {
+  background: white;
+
+  width: 100%;
+  max-width: 550px;
+
+  padding: 30px;
+
+  border-radius: 25px;
+
+  animation: popup 0.3s ease;
+}
+
+@keyframes popup {
+
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+}
+
+.quizBox h2 {
+  margin-bottom: 20px;
+}
+
+#questionText {
+  font-size: 20px;
+
+  margin-bottom: 20px;
+
+  font-weight: bold;
+}
+
+.answer {
+  width: 100%;
+
+  background: #f2f4ff;
+
+  color: #333;
+
+  margin: 7px 0;
+
+  border: 2px solid #ddd;
+}
+
+.answer:hover {
+  background: #667eea;
+  color: white;
+}
+
+.correct {
+  background: #2ecc71 !important;
+  color: white !important;
+}
+
+.wrong {
+  background: #e74c3c !important;
+  color: white !important;
+}
+
+#feedback {
+  margin: 15px 0;
+
+  font-weight: bold;
+
+  font-size: 18px;
+}
+
+/* RESULT */
+
+.finalScore {
+  font-size: 60px;
+
+  font-weight: bold;
+
+  color: #667eea;
+
+  margin: 20px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:600px) {
+
+  header h1 {
+    font-size: 32px;
+  }
+
+  .stats {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    font-size: 14px;
+  }
+
+  #gameArea {
+    height: 400px;
+  }
+
+  .object {
+    font-size: 45px;
+  }
+
+}
